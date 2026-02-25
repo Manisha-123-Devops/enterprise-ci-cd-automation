@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enterprise-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: enterprise-app
+  template:
+    metadata:
+      labels:
+        app: enterprise-app
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 5000
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
