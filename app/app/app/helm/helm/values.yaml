@@ -1,0 +1,5 @@
+image:
+  repository: your-dockerhub-username/enterprise-app
+  tag: latest
+
+replicaCount: 2
