@@ -1,0 +1,31 @@
+name: Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-scan-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build -t enterprise-app:${{ github.sha }} .
+
+      - name: Run Trivy Security Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: enterprise-app:${{ github.sha }}
+
+      - name: Push to DockerHub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker tag enterprise-app:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/enterprise-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/enterprise-app:${{ github.sha }}
+
+      - name: Deploy via Helm
+        run: |
+          echo "Deployment step placeholder (EKS integration ready)"
